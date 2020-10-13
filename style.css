@@ -1,268 +1,366 @@
-﻿
-/*  ################# 
- *	### CSS Reset ###
- *  ################# */
+/* ### LOGIC ################ */
+.number9 + * { --digit: 0; }
+.number0:checked + * + * + * + * + * + * + * + * + * + * { --digit: 0; }
+.number1:checked + * + * + * + * + * + * + * + * + * { --digit: 1; }
+.number2:checked + * + * + * + * + * + * + * + * { --digit: 2; }
+.number3:checked + * + * + * + * + * + * + * { --digit: 3; }
+.number4:checked + * + * + * + * + * + * { --digit: 4; }
+.number5:checked + * + * + * + * + * { --digit: 5; }
+.number6:checked + * + * + * + * { --digit: 6; }
+.number7:checked + * + * + * { --digit: 7; }
+.number8:checked + * + * { --digit: 8; }
+.number9:checked + * { --digit: 9; }
 
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font-size: 100%;
-    font: inherit;
-    vertical-align: baseline;
-}
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section {
-	display: block;
-}
-body {
-    line-height: 1;
-}
-ol, ul {
-    list-style: none;
-}
-blockquote, q {
-    quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-    content: '';
-    content: none;
-}
-table {
-    border-collapse: collapse;
-    border-spacing: 0;
-}
-/* End of CSS Reset */
+#digit1 > :checked ~ :last-child { --digit-1: var(--digit); --value-1: var(--digit); }
+#digit2 > :checked ~ :last-child { --digit-2: var(--digit); --value-1: calc(var(--digit-1) * 10 + var(--digit-2)); }
+#digit3 > :checked ~ :last-child { --digit-3: var(--digit); --value-1: calc(var(--digit-1) * 100 + var(--digit-2) * 10 + var(--digit-3)); }
+#digit4 > :checked ~ :last-child { --digit-4: var(--digit); --value-1: calc(var(--digit-1) * 1000 + var(--digit-2) * 100 + var(--digit-3) * 10 + var(--digit-4)); }
+#digit5 > :checked ~ :last-child { --digit-5: var(--digit); --value-2: var(--digit-5); }
+#digit6 > :checked ~ :last-child { --digit-6: var(--digit); --value-2: calc(var(--digit-5) * 10 + var(--digit-6)); }
+#digit7 > :checked ~ :last-child { --digit-7: var(--digit); --value-2: calc(var(--digit-5) * 100 + var(--digit-6) * 10 + var(--digit-7)); }
+#digit8 > :checked ~ :last-child { --digit-8: var(--digit); --value-2: calc(var(--digit-5) * 1000 + var(--digit-6) * 100 + var(--digit-7) * 10 + var(--digit-8)); }
+
+#add:checked      ~ #equals:checked ~ main { --out: calc(var(--value-1) + var(--value-2)); }
+#subtract:checked ~ #equals:checked ~ main { --out: calc(var(--value-1) - var(--value-2)); }
+#multiply:checked ~ #equals:checked ~ main { --out: calc(var(--value-1) * var(--value-2)); }
+#divide:checked   ~ #equals:checked ~ main { --out: calc(var(--value-1) / var(--value-2)); }
+
+main { counter-reset: value1 var(--value-1, 0) value2 var(--value-2, 0) out var(--out, 0); }
+
+/*    a
+*/
+ #input::after { content: ""; }
+#output::after { content: counter(value1); }
+
+/*    a
+      +
+*/
+#operations > :checked ~ #equals:not(:checked) ~ main #input::after { content: counter(value1); }
+
+#add:checked      ~ #equals:not(:checked) ~ main  #output::after { content: "+"; }
+#subtract:checked ~ #equals:not(:checked) ~ main  #output::after { content: "-"; }
+#multiply:checked ~ #equals:not(:checked) ~ main  #output::after { content: "\00D7"; }
+#divide:checked   ~ #equals:not(:checked) ~ main  #output::after { content: "\00f7"; }
+
+/*   a +
+       b
+*/
+#digit5 :checked ~ div #add:checked      ~ #equals:not(:checked) ~ main  #input::after { content: counter(value1) " + "; }
+#digit5 :checked ~ div #subtract:checked ~ #equals:not(:checked) ~ main  #input::after { content: counter(value1) " - "; }
+#digit5 :checked ~ div #multiply:checked ~ #equals:not(:checked) ~ main  #input::after { content: counter(value1) " \00D7  "; }
+#digit5 :checked ~ div #divide:checked   ~ #equals:not(:checked) ~ main  #input::after { content: counter(value1) " \00f7 "; }
+
+#digit5 :checked ~ div #operations > :checked ~ #equals:not(:checked) ~ main #output::after,
+#digit5 :checked ~     #operations > :checked ~ #equals:not(:checked) ~ main #output::after { content: counter(value2); }
+
+/* a + b
+       c
+*/
+#add:checked      ~ #equals:checked ~ main  #input::after { content: counter(value1) " + " counter(value2); }
+#subtract:checked ~ #equals:checked ~ main  #input::after { content: counter(value1) " - " counter(value2); }
+#multiply:checked ~ #equals:checked ~ main  #input::after { content: counter(value1) " \00D7  " counter(value2); }
+#divide:checked   ~ #equals:checked ~ main  #input::after { content: counter(value1) " \00f7  " counter(value2); }
 
 
+#equals:checked ~ main #output::after { content: counter(out); }
 
+/* dividing by 0 */
+#digit5 > .number0:checked ~ div #divide:checked ~ #equals:checked ~ main #output::after { content: "Oi"; }
 
-/*  ######################### 
- *	### Calculator styles ###
- *  ######################### */
+#digit5 > .number0:checked ~ div #divide:checked ~ #equals:checked ~ main #output::after { content: "Oi"; }
+#digit5 :not(.number0):checked ~ div #divide:checked ~ #equals:checked ~ main #output::after { content: counter(out); }
 
-/* Grid units */
-.u1,
-.u2,
-.u3,
-.u4 {
-    float: left;
-    margin: 3px;
-}
-.u1 {
-    width: 40px;
-}
-.u2 {
-    width: 86px;
-}
-.u3 {
-    width: 132px;
-}
-.u4 {
-    width: 178px;
-}
-
-.calculator {
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
-	-moz-box-shadow: inset 0px 1px #7b839b;
-	-webkit-box-shadow: inset 0px 1px #7b839b;
-	box-shadow: inset 0px 1px #7b839b;
-	background-color: #3C4150;
-	border: 1px solid #181A20;
-	float: left;
-	padding: 6px;
-	width: 184px;
-}
-
-.display {
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
-	-moz-box-shadow: inset 0 1px 1px #0A0B0D, 0px 1px #5E6370;
-	-webkit-box-shadow: inset 0 1px 1px #0A0B0D, 0px 1px #5E6370;
-	box-shadow: inset 0 1px 1px #0A0B0D, 0px 1px #5E6370;
-	-webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-	background-color: #17181E;
-	border: 1px solid #181A20;
-	padding: 0 10px;
-	text-align: right;
-}
-.display-text {
-	color: #fff;
-	font-size: 22px;
-	line-height: 42px;
-	overflow: hidden;
-	unicode-bidi: embed;
-	width: 1000px;
-    float: right;
-}
-.display-inner {
-    width: 156px;
-    overflow: hidden;
-}
-.button {
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	border: 1px solid #181A20;
-	color: #fff;
-	cursor: pointer;
-	float: left;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 12px;
-	font-weight: bold;
-	line-height: 25px;
-	padding: 0 8px;
-	text-align: center;
-	text-decoration: none;
-	vertical-align: middle;
-}
-.button:active,
-.button-active {
+button {
 	position: relative;
-	top: 1px;
+	border: none;
 }
-.button:active,
-.button:focus {
-	outline: 0;
+
+label {
+	width: 100%;
+	height: 100%;
+	display: block;
+	position: absolute;
+	left: 0;
+	top: 0;
 }
-/* Mozilla fix */
-button::-moz-focus-inner {
+
+label.digit5,
+label.digit6,
+label.digit7,
+label.digit8 { display: none; }
+
+#operations > :checked ~ main label { display: block; }
+
+#digit1 > :checked ~ div label.digit1 { display: none; }
+#digit2 > :checked ~ div label.digit2 { display: none; }
+#digit3 > :checked ~ div label.digit3 { display: none; }
+#digit4 > :checked ~ div label.digit4 { display: none; }
+
+#digit5 > :checked ~ div label.digit5 { display: none; }
+#digit6 > :checked ~ div label.digit6 { display: none; }
+#digit7 > :checked ~ div label.digit7 { display: none; }
+#digit8 > :checked ~ div label.digit8 { display: none; }
+
+#operations > :checked ~ #equals:not(:checked) ~ main label:nth-child(n + 4) { display: none; }
+#operations > :checked ~ #equals:not(:checked) ~ main label.digit5 { display: block; }
+
+#operations > :checked ~ #equals:checked ~ main label { display: none !important; }
+
+#digit5 > :checked ~ div #operations > :checked ~ #equals:not(:checked) ~ main label.digit5 { display: none; }
+#digit5 > .number0:checked ~ div  #operations > :checked ~ #equals:not(:checked) ~ main label.digit5 { display: block; }
+#digit5 > .number0:checked ~ :checked ~ div  #operations > :checked ~ #equals:not(:checked) ~ main label.digit5 { display: none; }
+
+label[for=equals]{ display: none; }
+#digit5 > :checked ~ div #operations > :checked ~ #equals ~ main label[for=equals]{ display: block; }
+
+#operations > :checked ~ main button:nth-child(4n) label { display: none; }
+
+#digit5 > .number0:checked ~ div main button:nth-child(14) label { pointer-events: none; }
+#digit5 > .number0:checked ~ :checked ~ div main button:nth-child(14) label { pointer-events: initial; }
+
+input[type=checkbox]{
+	position: fixed;
+	right: 0;
+	top: 0;
+	display: block;
+	width: 1px;
+	height: 1px;
+	opacity: 0.01;
+	transform: scale(0.01);
+}
+
+/* ### DESIGN #######################*/
+body {
+	font: 20px / 1.5 Roboto, arial, sans-serif;
+	height: 100vh;
+	width: 100vw;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 0;
+	background-color: khaki;
+}
+
+main {
+	width: 100vw;
+	max-width: 400px;
+	height: 100vh;
+  min-height: 500px;
+	max-height: 600px;
+	display: flex;
+	flex-direction: column;
+	box-shadow: 0 4px 10px 2px rgba(0, 0, 0, 0.1),
+		0 5px 20px 5px rgba(0, 0, 0, 0.08),
+		0 2px 6px rgba(0, 0, 0, 0.1);
+	background-color: #f7f5eb;
+}
+
+#screen {
+	height: 250px;
+	text-align: right;
+	color: rgba(0, 0, 0, 0.7);
+}
+
+#input {
+	height: 50px;
+	line-height: 50px;
+	padding: 50px 36px 0;
+}
+
+#output {
+	height: 150px;
+	line-height: 100px;
+	padding: 0 36px;
+	font-size: 80px;
+}
+
+#buttons {
+	flex: 1;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-template-columns: repeat(4, 1fr);
+	background-color: #555;
+}
+
+
+button::-moz-focus-inner, input::-moz-focus-inner { border: 0; }
+
+button {
+	color: rgba(255, 255, 255, 0.7);
+	background: none;
+	font-size: 20px;
+	font-family: inherit;
+	outline: none;
 	padding: 0;
-	border: 0;
+	overflow: hidden;
 }
 
-/* Buttons styling exceptions */
-.button-backspace {
-	font-size: 17px;
-	font-weight: normal;
+button::after {
+	content: "";
+	background-color: rgba(255, 255, 255, 0.1);
+	opacity: 0;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+	transition: .2s;
+	pointer-events: none;
+}
+
+button:hover::after {
+	opacity: 1;
+}
+
+button::before {
+	content: "";
+	background-color: rgba(255, 255, 255, 0.1);
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	opacity: 0;
+	transform: translate(-50%, -50%) scale(0.8);
+	transition: .3s;
+	animation: .2s 0s 1 bloop;
+	pointer-events: none;
+}
+
+@keyframes bloop{
+	from { transform: translate(-50%, -50%); opacity: 1; }
+	to { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+}
+
+button:active::before {
+	opacity: 1;
+	transform: translate(-50%, -50%);	
+	animation: none;
+}
+
+button:nth-child(4n){
+	background-color: #f4e660;
+	color: rgba(0, 0, 0, 0.6);
+}
+
+button:nth-child(4n)::after, button:nth-child(4n)::before{
+	background-color: rgba(121, 104, 6, 0.1);
+}
+
+button, button * {
+	cursor: pointer;
 }
 
 
-/* Button skins */
-.button-gray {
-	-moz-box-shadow: inset 0px 1px #9498A3, 0 1px 1px #323643;
-	-webkit-box-shadow: inset 0px 1px #9498A3, 0 1px 1px #323643;
-	box-shadow: inset 0px 1px #9498A3, 0 1px 1px #323643;
-	background-color: #595E6B;
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#656976), to(#4B505E));
-	background-image: -webkit-linear-gradient(top, #656976, #4B505E);
-	background-image: -o-linear-gradient(top, #656976, #4B505E);
-	background-image: linear-gradient(to bottom, #656976, #4B505E);
-	background-image: -moz-linear-gradient(top, #656976, #4B505E);
-	background-repeat: repeat-x;
-	filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ff656976', endColorstr='#ff4B505E', GradientType=0);
-	text-shadow: 0px -1px #181A20;
+button:nth-child(13){
+	overflow: visible;
 }
-	.button-gray:hover {
-		background-color: #666B78;
-		background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#757985), to(#545867));
-		background-image: -webkit-linear-gradient(top, #757985, #545867);
-		background-image: -o-linear-gradient(top, #757985, #545867);
-		background-image: linear-gradient(to bottom, #757985, #545867);
-		background-image: -moz-linear-gradient(top, #757985, #545867);
-		background-repeat: repeat-x;
-		filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ff757985', endColorstr='#ff545867', GradientType=0);
-	}
-	.button-gray.active, 
-	.button-gray:active {
-		-webkit-box-shadow: inset 0 1px 1px #14171E, 0px 1px #5E6370;
-		-moz-box-shadow: inset 0 1px 1px #14171E, 0px 1px #5E6370;
-		box-shadow: inset 0 1px 1px #14171E, 0px 1px #5E6370;
-		background-color: #292D3A;
-		background-image: none;
-		filter: progid:dximagetransform.microsoft.gradient(enabled=false);
-	}
-.button-red {
-	-moz-box-shadow: inset 0px 1px #CA9883, 0 1px 1px #323643;
-	-webkit-box-shadow: inset 0px 1px #CA9883, 0 1px 1px #323643;
-	box-shadow: inset 0px 1px #CA9883, 0 1px 1px #323643;
-	background-color: #965F48;
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#A46E57), to(#844D37));
-	background-image: -webkit-linear-gradient(top, #A46E57, #844D37);
-	background-image: -o-linear-gradient(top, #A46E57, #844D37);
-	background-image: linear-gradient(to bottom, #A46E57, #844D37);
-	background-image: -moz-linear-gradient(top, #A46E57, #844D37);
-	background-repeat: repeat-x;
-	filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffA46E57', endColorstr='#ff844D37', GradientType=0);
-	text-shadow: 0px -1px #58372A;
+button:nth-child(13)::before, button:nth-child(13)::after{
+	content: none;
 }
-	.button-red:hover {
-		background-color: #A26B55;
-		background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#B4806A), to(#915740));
-		background-image: -webkit-linear-gradient(top, #B4806A, #915740);
-		background-image: -o-linear-gradient(top, #B4806A, #915740);
-		background-image: linear-gradient(to bottom, #B4806A, #915740);
-		background-image: -moz-linear-gradient(top, #B4806A, #915740);
-		background-repeat: repeat-x;
-		filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffB4806A', endColorstr='#ff915740', GradientType=0);
-	}
-	.button-red.active, 
-	.button-red:active {
-		-webkit-box-shadow: inset 0 1px 1px #2A130C, 0px 1px #5E6370;
-		-moz-box-shadow: inset 0 1px 1px #2A130C, 0px 1px #5E6370;
-		box-shadow: inset 0 1px 1px #2A130C, 0px 1px #5E6370;
-		background-color: #472619;
-		background-image: none;
-		filter: progid:dximagetransform.microsoft.gradient(enabled=false);
-	}
-.button-blue {
-	-moz-box-shadow: inset 0px 1px #BCD6FF, 0 1px 1px #323643;
-	-webkit-box-shadow: inset 0px 1px #BCD6FF, 0 1px 1px #323643;
-	box-shadow: inset 0px 1px #BCD6FF, 0 1px 1px #323643;
-	background-color: #598FE9;
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#6DA1F8), to(#427BD8));
-	background-image: -webkit-linear-gradient(top, #6DA1F8, #427BD8);
-	background-image: -o-linear-gradient(top, #6DA1F8, #427BD8);
-	background-image: linear-gradient(to bottom, #6DA1F8, #427BD8);
-	background-image: -moz-linear-gradient(top, #6DA1F8, #427BD8);
-	background-repeat: repeat-x;
-	filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ff6DA1F8', endColorstr='#ff427BD8', GradientType=0);
-	text-shadow: 0px -1px #2C4E88;
+
+input[type=reset]{
+	background: #f4e660;
+	border: none;
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: rgba(0, 0, 0, 0.6);
+	font-size: inherit;
+	font-family: inherit;
+	padding: 0;
+	outline: none;
+	transition: .2s;
 }
-	.button-blue:hover {
-		background-color: #6E9EED;
-		background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#83B0FC), to(#578ADE));
-		background-image: -webkit-linear-gradient(top, #83B0FC, #578ADE);
-		background-image: -o-linear-gradient(top, #83B0FC, #578ADE);
-		background-image: linear-gradient(to bottom, #83B0FC, #578ADE);
-		background-image: -moz-linear-gradient(top, #83B0FC, #578ADE);
-		background-repeat: repeat-x;
-		filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ff83B0FC', endColorstr='#ff578ADE', GradientType=0);
-	}
-	.button-blue.active, 
-	.button-blue:active {
-		-webkit-box-shadow: inset 0 1px 1px #0E192E, 0px 1px #5E6370;
-		-moz-box-shadow: inset 0 1px 1px #0E192E, 0px 1px #5E6370;
-		box-shadow: inset 0 1px 1px #0E192E, 0px 1px #5E6370;
-		background-color: #1E3357;
-		background-image: none;
-		filter: progid:dximagetransform.microsoft.gradient(enabled=false);
-	}
+
+input[type=reset]:hover{ background-color: #e7d956; }
+input[type=reset]:active { background-color: #dccd4d; }
+
+button#why {
+	color: rgba(0, 0, 0, 0.3);
+	width: 40px;
+	height: 40px;
+	padding: 16px;
+	box-sizing: content-box;
+	position: fixed;
+	top: 0;
+	right: 0;
+}
+
+button#why::before, button#why::after { content: none; }
+
+section {
+  font-size: 16px;
+	width: 450px;
+	box-sizing: border-box;
+	position: fixed;
+	top: 12px;
+	right: -700px;
+	max-width: calc(100vw - 24px);
+	max-height: calc(100vh - 24px);
+	background-color: white;
+	transform-origin: 95% 5%;
+	transform: scale(0.8);
+	opacity: 0;
+	box-shadow: 0 4px 10px 2px rgba(0, 0, 0, 0.1),
+		0 5px 20px 5px rgba(0, 0, 0, 0.08),
+		0 10px 30px 10px rgba(0, 0, 0, 0.08);
+	transition: all .3s, right 0s .3s;
+	background-color: #f7f5eb;
+	padding: 2em;
+}
+
+button#why:focus + section {
+	right: 12px;
+	transform: none;
+	opacity: 1;
+	transition: all .3s, right 0s;
+}
+
+section h1 {
+	padding-left: 24px;
+	font-size: 2em;
+	margin: 0 auto 40px;
+}
+
+section p { margin: 18px 0; }
+section p:last-child { margin-bottom: 12px; }
+
+a {
+	color: rgba(0, 0, 0, 0.25);
+	width: 48px;
+	height: 48px;
+	padding: 12px;
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+
+svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
 
 
 
+@media screen and (max-width: 600px){
+	main {
+		max-width: none;
+		max-height: none;
+	}
+	button#why, a {
+		padding: 12px;
+		width: 36px;
+		height: 36px;
+	}
+}
+
+@media screen and (max-height: 500px){
+	section { width: 900px; }
+}
